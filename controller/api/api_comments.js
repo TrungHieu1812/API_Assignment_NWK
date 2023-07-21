@@ -82,41 +82,8 @@ const addComment = async (req, res) => {
 //   });
 
 
-// const updateUser = async (req, res) => {
-
-//     let objUser = await myModel.User_Model.findById(req.params.idu);
-//     (objUser.fullname = req.body.fullname),
-//     (objUser.username = req.body.username),
-//     (objUser.password = req.body.password),
-//     (objUser.email = req.body.email),
-//     (objUser.avatar = req.body.avatar);
-
-
-//     try {
-//         await  myModel.User_Model.findByIdAndUpdate(req.params.idu, objUser);
-//         objReturn.message = "Sửa thành công!";
-//     } catch (error) {
-//         objReturn.message = "Sửa thất bại!";
-//         console.log(error.message);
-//     }
-
-//     return res.json(objReturn);
-// };
-
-// const deleteUser = async (req, res) => {
-//     try {
-//         await myModel.User_Model.findByIdAndDelete(req.params.idu);
-//         objReturn.message = "Xoá thành công!";
-//     } catch (error) {
-//         objReturn.message = "Xóa thất bại!";
-//     }
-
-//     return res.json(objReturn);
-// };
 
 module.exports = {
     getComment,
     addComment,
-    // updateUser,
-    // deleteUser,
 };
