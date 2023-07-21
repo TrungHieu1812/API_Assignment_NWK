@@ -2,33 +2,47 @@ var mymodel = require('../../models/allModel');
 // const bcrypt = require("bcrypt");
 
 
-var objReturn = {
-    status: 1,
-    message: "",
-};
-
 const login = async (req, res, next) => {
     
     try {
-        let objU = await mymodel.User_Model.findOne({username:req.body.username});
+        const objU = await mymodel.User_Model.findOne({username:req.body.username});
 
-        if (objU != null){ 
-            //tồn tại username ==> kiểm tra passwd
-            if(objU.password == req.body.password){
-                //đúng thông tin tài khoản ==>lưu vào session
-                req.session.userid = objU;
-                //chuyển trang về trang quản trị
-                // return res.redirect('/users')
-                objReturn.message = "Đăng nhập thành công!";
+        if (objU){ 
+            if(objU.password === req.body.password){
+                if (objU.role === 0) {
+                    res.json({
+                      exists: true,
+                      role: 0,
+                      fullname: objU.fullname,
+                      email: objU.email,
+                      message: "Đăng nhập thành công",
+                    });
+                  } else if (objU.role === 1) {
+                    res.json({
+                      exists: true,
+                      role: 1,
+                      fullname: objU.fullname,
+                      email: objU.email,
+                      message: "Đăng nhập thành công",
+                    });
+                  }
             }else{
-                objReturn.message = 'Mật khẩu không đúng!';
+                res.json({
+                    exists: true,
+                    message: "Đăng nhập không thành công",
+                    error: "Mật khẩu không đúng",
+                });
             }
         }else{
-            objReturn.message = 'Không tồn tại tài khoản : '+req.body.username;
+            res.json({
+                exists: false,
+                error: "Không tồn tại tài khoản "+req.body.username,
+              });
         }
        
     } catch (error) {
-        objReturn.message = error.message;
+        // objReturn.message = error.message;
+        res.status(500).json({ error: "Lỗi đăng nhập" });
     }
 
 }
@@ -36,41 +50,43 @@ const login = async (req, res, next) => {
 
 const reg = async (req, res, next) => {
 
+    const { fullname, username, password, email, avatar } = req.body;
+
     try {
-        const salt = await bcrypt.genSalt(10);
-
-        const user = new mymodel.User_Model(req.body);
-
-        user.password = await bcrypt.hash(req.body.password, salt);
-        const token = await user.generateAuthToken();
-
-        let new_u = await user.save()
-
-
-        return res.status(201).json({ user: new_u, token })
-
+      const existingUser = await mymodel.User_Model.findOne({ username: username });
+      if (existingUser) {
+        // Username đã tồn tại;
+        res.json({ exists: true ,message: "Tài khoản "+ username+" đã tồn tại" });
+      } else {
+        const newUser = new mymodel.User_Model({
+          fullname,
+          username,
+          password,
+          email,
+          avatar,
+          role: 1,
+        });
+        const savedUser = await newUser.save();
+        res.json({ exists: false, savedUser ,message: "Đăng ký thành công"}); // false là chưa có username thì đăng ký;
+      }
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({msg: error.message})
+      res.status(500).json({ error: "Lỗi tạo mới người dùng" });
     }
-
-
 }
 
 
 
 
 const logout = async (req, res, next) => {
-    try {
-        console.log( req.user);
-        // req.user.generateAuthToken();
-        req.user.token = null; //xóa token
-        await req.user.save()
-        return res.status(200).json({msg: 'Đăng xuất thành công'});
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(error.message)
-    }
+    // try {
+    //     console.log( req.user);
+    //     // req.user.generateAuthToken();
+    //     await req.user.save()
+    //     return res.status(200).json({msg: 'Đăng xuất thành công'});
+    // } catch (error) {
+    //     console.log(error);
+    //     res.status(500).send(error.message)
+    // }
  
 }
 

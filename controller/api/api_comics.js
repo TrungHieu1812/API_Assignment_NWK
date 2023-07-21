@@ -32,7 +32,7 @@ const getComic = async (req, res) => {
                 author:true,
                 release:true,
                 cover_img:true,
-        });
+        }).populate('id_comment',"content date")
 
         objReturn.data = Comic;
     } catch (error) {

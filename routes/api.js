@@ -11,7 +11,7 @@ var api_LogIn_Reg = require("../controller/api/api-logIn-Reg");
 
 //Đăng nhập - Đăng ký - Đăng xuất
 router.post('/login', api_LogIn_Reg.login);
-// router.post('/reg', api_LogIn_Reg.reg); 
+router.post('/reg', api_LogIn_Reg.reg); 
 // router.get('/logout',mdw.api_auth, api_LogIn_Reg.logout);
 
 
