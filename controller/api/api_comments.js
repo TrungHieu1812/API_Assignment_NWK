@@ -9,10 +9,10 @@ var objReturn = {
 const getComment = async (req, res) => {
     let listCom;
     try {
-        listCom = await myModel.Comment_Model.find({id_comic:req.params.idc})
-                                             .select({content:true,date:true,_id:false})
-                                             .populate('id_user','username')
-                                            
+        listCom = await myModel.Comment_Model.find({ id_comic: req.params.idc })
+            .select({ content: true, date: true, _id: false })
+            .populate('id_user', 'username')
+
         if (listCom.length > 0) {
             objReturn.data = 0;
         } else {
@@ -52,21 +52,34 @@ const getComment = async (req, res) => {
 //     }
 //     return res.status(200).json(objReturn.data);
 // };
-  
+
 
 const addComment = async (req, res) => {
 
-    const comicId = req.params.idc;
-    const { content,id_user } = req.body;
+    let obj = new myModel.Comment_Model();
 
-    try {
-      const comment = new myModel.Comment_Model({ content ,comicId, id_user });
-      await comment.save();
-      res.json(comment);
-    } catch (error) {
-      res.status(500).json({ error: "Lỗi gửi bình luận" });
+    const comic = await myModel.Comic_Model.findOne({ _id: req.params.idc });
+    
+    if (comic) {
+        await comic.updateOne({ $push: { id_comment: obj._id } });
+        obj.content = req.body.content;
+        obj.id_user = req.body.id_user;
+        obj.id_comic = req.params.idc;
+
+        try {
+            await obj.save();
+            res.json(obj);
+        } catch (error) {
+            res.status(500).json({ error: "Lỗi gửi bình luận" });
+        }
+
+    } else {
+        res.status(500).json({ error: "Lỗi gửi bình luận" });
     }
+
 };
+
+
 
 
 // app.post("/comics/:id/comments", async (req, res) => {
