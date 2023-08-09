@@ -8,7 +8,7 @@ var objReturn = {
 const getListComic = async (req, res) => {
     let listComic;
     try {
-        listComic = await myModel.Comic_Model.find().select({name:true,cover_img:true});
+        listComic = await myModel.Comic_Model.find().select({name:true,cover_img:true,chapter:true});
         if (listComic.length > 0) {
             objReturn.data = 0;
         } else {
@@ -23,16 +23,12 @@ const getListComic = async (req, res) => {
     return res.status(200).json(objReturn.data);
 };
 
+
 const getComic = async (req, res) => {
-    let Comic;
     try {
-        Comic = await myModel.Comic_Model.findById(req.params.idc)
-        .select({name:true,
-                desc:true,
-                author:true,
-                release:true,
-                cover_img:true,
-        }).populate('id_comment',"content date")
+        // Comic = await myModel.Comic_Model.findById(req.params.idc).populate('id_comment')
+        let Comic = await myModel.Comic_Model.findById(req.params.idc).populate({ path: "id_comment", select: "content date", 
+                                                                            populate: { path: "id_user", select: "avatar fullname" } })
 
         objReturn.data = Comic;
     } catch (error) {
@@ -63,6 +59,7 @@ const addComic = async (req, res) => {
     objComic.release = req.body.release;
     objComic.cover_img = req.body.cover_img;
     objComic.list_image = req.body.list_image;
+    objComic.chapter = req.body.chapter;
 
     try {
         await objComic.save();
@@ -85,6 +82,7 @@ const updateComic = async (req, res) => {
     (objComic.release = req.body.release),
     (objComic.cover_img = req.body.avatar),
     (objComic.list_image = req.body.list_image);
+    (objComic.chapter = req.body.chapter);
 
 
     try {

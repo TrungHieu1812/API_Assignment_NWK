@@ -1,4 +1,5 @@
 var myModel = require("../../models/allModel");
+const { param } = require("../../routes/api");
 
 var objReturn = {
     status: 1,
@@ -23,6 +24,18 @@ const getUser = async (req, res) => {
     return res.status(200).json(objReturn.data);
 };
 
+const getOneUser = async (req, res) => {
+    try {
+        let User = await myModel.User_Model.findById(req.params.idu);
+
+        objReturn.data = User;
+    } catch (error) {
+        objReturn.message = error.message;
+        objReturn.message = "Không tìm user!";
+    }
+    return res.status(200).json(objReturn.data);
+};
+
 const addUser = async (req, res) => {
 
     let objUser = new myModel.User_Model();
@@ -31,6 +44,7 @@ const addUser = async (req, res) => {
     objUser.password = req.body.password;
     objUser.email = req.body.email;
     objUser.avatar = req.body.avatar;
+    objUser.role = req.body.role;
 
     try {
         await objUser.save();
@@ -51,6 +65,9 @@ const updateUser = async (req, res) => {
     (objUser.password = req.body.password),
     (objUser.email = req.body.email),
     (objUser.avatar = req.body.avatar);
+    (objUser.role = req.body.role);
+
+    console.log('objUser ',objUser);
 
 
     try {
@@ -80,4 +97,5 @@ module.exports = {
     addUser,
     updateUser,
     deleteUser,
+    getOneUser
 };

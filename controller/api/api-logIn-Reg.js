@@ -10,34 +10,28 @@ const login = async (req, res, next) => {
         if (objU){ 
             if(objU.password === req.body.password){
                 if (objU.role === 0) {
-                    res.json({
-                      exists: true,
-                      role: 0,
-                      fullname: objU.fullname,
-                      email: objU.email,
-                      message: "Đăng nhập thành công",
-                    });
+                    res.status(201).json(objU);
+                    console.log("role = 0");
                   } else if (objU.role === 1) {
-                    res.json({
-                      exists: true,
-                      role: 1,
-                      fullname: objU.fullname,
-                      email: objU.email,
-                      message: "Đăng nhập thành công",
-                    });
+                    res.status(201).json(objU);
+                    console.log("role = 1");
                   }
             }else{
-                res.json({
+                res.status(401).json({
                     exists: true,
-                    message: "Đăng nhập không thành công",
+                    message: "Đăng nhập không thành công",  
                     error: "Mật khẩu không đúng",
                 });
+                console.log("Mật khẩu không đúng");
+                
             }
         }else{
-            res.json({
+            res.status(401).json({
                 exists: false,
                 error: "Không tồn tại tài khoản "+req.body.username,
               });
+              console.log("Không tồn tại tài khoản");
+              
         }
        
     } catch (error) {
@@ -56,7 +50,7 @@ const reg = async (req, res, next) => {
       const existingUser = await mymodel.User_Model.findOne({ username: username });
       if (existingUser) {
         // Username đã tồn tại;
-        res.json({ exists: true ,message: "Tài khoản "+ username+" đã tồn tại" });
+        res.status(401).json({ exists: true ,message: "Tài khoản "+ username+" đã tồn tại" });
       } else {
         const newUser = new mymodel.User_Model({
           fullname,
@@ -67,7 +61,7 @@ const reg = async (req, res, next) => {
           role: 1,
         });
         const savedUser = await newUser.save();
-        res.json({ exists: false, savedUser ,message: "Đăng ký thành công"}); // false là chưa có username thì đăng ký;
+        res.status(201).json({ exists: false, savedUser ,message: "Đăng ký thành công"}); // false là chưa có username thì đăng ký;
       }
     } catch (error) {
       res.status(500).json({ error: "Lỗi tạo mới người dùng" });

@@ -17,6 +17,7 @@ router.post('/reg', api_LogIn_Reg.reg);
 
 //users
 router.get("/users", api_user.getUser);
+router.get("/users/:idu", api_user.getOneUser);
 router.post("/users", api_user.addUser);
 router.put("/update-user/:idu",api_user.updateUser);
 router.delete("/delete-user/:idu",api_user.deleteUser);
@@ -35,8 +36,8 @@ router.delete("/delete-comic/:idc",api_comic.deleteComic);
 
 //comments
 router.get("/comics/comments/:idc", api_comment.getComment);
-router.post("/comics/comments/:idc", api_comment.addComment);
-// router.put("/update-comments/:idc",api_comment.updateComic);
-// router.delete("/delete-comments/:idc",api_comment.deleteComic);
+router.post("/comics/comments/:comicId/:usersId", api_comment.addComment);
+router.put("/update-comments/:cmtId/:usersId",api_comment.updateCmt);
+router.delete("/delete-comments/:cmtId/:usersId",api_comment.deleteCmt);
 
 module.exports = router;

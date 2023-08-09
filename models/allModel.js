@@ -28,6 +28,7 @@ const Comics_Schema = new db.mongoose.Schema(
         id_comment:[
             {type: db.mongoose.Schema.Types.ObjectId, ref: 'Comment_Model'}
         ],
+        chapter: { type: Number, required: true },
     },
     { collection: 'comics' }
 );
